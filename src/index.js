@@ -19,10 +19,23 @@
 
 import { fetchPosts, createPost } from './api.js';
 
+let allPosts = [];
+
 document.getElementById('load-btn').addEventListener('click', async () => {
-    const posts = await fetchPosts();
-    displayPosts(posts); //function call to display posts
+    // Fetch posts from the API
+    const fetchedPosts = await fetchPosts();
+
+    // Combine fetched posts with any new posts in allPosts
+    //allPosts = [...fetchedPosts, ...allPosts]; // Prepend existing posts with newly fetched posts
+
+    // Update allPosts to include newly fetched posts followed by existing posts
+    allPosts = [...allPosts, ...fetchedPosts.filter(post => !allPosts.find(p => p.id === post.id))];
+
+
+    displayPosts(allPosts); // Display the posts
 });
+
+
 
 //function to display posts in the UI or appView
 const displayPosts = (posts) => {
@@ -46,7 +59,8 @@ document.getElementById('add-btn').addEventListener('click', async () => {
         const newPost = await createPost(title, body);
         console.log(newPost);
         if (newPost) {
-            displayPosts(await fetchPosts()); // refresh the post list
+            allPosts.unshift(newPost);
+            displayPosts(allPosts); // refresh the post list
             document.getElementById('title').value = ''; // Clear input
             document.getElementById('body').value = ''; // clear textarea
         }
@@ -54,6 +68,16 @@ document.getElementById('add-btn').addEventListener('click', async () => {
         alert('Please fill in both fields');
     }
 });
+
+//event listener for searching posts basing on title
+document.getElementById('search-btn').addEventListener('click', () => {
+    const searchTerm = document.getElementById('search-input').value.toLowerCase();
+    const filteredPosts = allPosts.filter(post =>
+        post.title.toLowerCase().includes(searchTerm) || post.body.toLowerCase().includes(searchTerm)
+    );
+    displayPosts(filteredPosts); // Display filtered posts
+});
+
 
 
 
