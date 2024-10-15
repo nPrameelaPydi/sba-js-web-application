@@ -6,17 +6,36 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="styles.css">
         <title>Travel Planner</title>
+        <script defer type="module" src="src/index.js"></script>
     </head>
 
     <body>
         <div id="app">
-            <h1>Travel Planner</h1>
-            <input type="text" id="search" placeholder="Search for a destination..." />
-            <button id="search-btn">Search</button>
-            <div id="weather"></div>
-            <div id="results"></div>
+            <header>
+                <h1>Travel Planner</h1>
+            </header>
+
+            <main>
+                <section class="input-section">
+                    <input type="text" id="title" placeholder="Post title..." />
+                    <textarea id="body" placeholder="Post content..." rows="4"></textarea>
+                    <div class="button-group">
+                        <button id="add-btn">Add Post</button>
+                        <button id="load-btn">Load Posts</button>
+                    </div>
+                </section>
+
+                <section id="posts-section">
+                    <h2>Posts</h2>
+                    <div id="posts"></div>
+                </section>
+            </main>
+
+            <footer>
+                <p>&copy; 2024 Travel Planner App</p>
+            </footer>
         </div>
-        <script type="module" src="src/index.js"></script>
+
     </body>
 
 </html>
