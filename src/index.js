@@ -17,14 +17,14 @@
 
 // src/index.js
 
-import { fetchPosts } from './api.js';
+import { fetchPosts, createPost } from './api.js';
 
 document.getElementById('load-btn').addEventListener('click', async () => {
     const posts = await fetchPosts();
     displayPosts(posts); //function call to display posts
 });
 
-// Function to display posts in the UI or appView
+//function to display posts in the UI or appView
 const displayPosts = (posts) => {
     const postsContainer = document.getElementById('posts');
     postsContainer.innerHTML = ''; // Clear previous posts
@@ -36,6 +36,24 @@ const displayPosts = (posts) => {
         postsContainer.appendChild(postElement);
     });
 };
+
+//event listener to add a new post
+document.getElementById('add-btn').addEventListener('click', async () => {
+    const title = document.getElementById('title').value;
+    const body = document.getElementById('body').value;
+
+    if (title && body) {
+        const newPost = await createPost(title, body);
+        console.log(newPost);
+        if (newPost) {
+            displayPosts(await fetchPosts()); // refresh the post list
+            document.getElementById('title').value = ''; // Clear input
+            document.getElementById('body').value = ''; // clear textarea
+        }
+    } else {
+        alert('Please fill in both fields');
+    }
+});
 
 
 
