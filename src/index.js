@@ -18,14 +18,15 @@
 // src/index.js
 
 import { fetchPosts, createPost } from './api.js';
+import { loadPostsFromLocalStorage, savePostsToLocalStorage } from './storage.js';
 
 let allPosts = [];
 
-//load posts from local storage
-const loadPostsFromLocalStorage = () => {
-    const storedPosts = localStorage.getItem('posts');
-    return storedPosts ? JSON.parse(storedPosts) : [];
-};
+////load posts from local storage
+//const loadPostsFromLocalStorage = () => {
+//    const storedPosts = localStorage.getItem('posts');
+//    return storedPosts ? JSON.parse(storedPosts) : [];
+//};
 
 document.getElementById('load-btn').addEventListener('click', async () => {
     // Fetch posts from the API
@@ -59,10 +60,10 @@ const displayPosts = (posts) => {
     });
 };
 
-//save posts to local storage
-const savePostsToLocalStorage = (posts) => {
-    localStorage.setItem('posts', JSON.stringify(posts));
-};
+////save posts to local storage
+//const savePostsToLocalStorage = (posts) => {
+//    localStorage.setItem('posts', JSON.stringify(posts));
+//};
 
 // Load initial posts from local storage
 allPosts = loadPostsFromLocalStorage();

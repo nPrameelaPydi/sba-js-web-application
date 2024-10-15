@@ -1,7 +1,7 @@
 
-//fetch posts
 const BASE_URL = 'https://dummyjson.com';
 
+//fetch posts
 export const fetchPosts = async () => {
     try {
         const response = await fetch(`${BASE_URL}/posts`);
@@ -14,7 +14,6 @@ export const fetchPosts = async () => {
     }
 };
 
-//create a new post
 
 //{
 //    "title": "Post Title",
@@ -22,6 +21,7 @@ export const fetchPosts = async () => {
 //    "userId": 1 
 //}
 
+//create a new post
 export const createPost = async (title, body) => {
     try {
         const response = await fetch(`${BASE_URL}/posts/add`, {
