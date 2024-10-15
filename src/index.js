@@ -21,6 +21,12 @@ import { fetchPosts, createPost } from './api.js';
 
 let allPosts = [];
 
+//load posts from local storage
+const loadPostsFromLocalStorage = () => {
+    const storedPosts = localStorage.getItem('posts');
+    return storedPosts ? JSON.parse(storedPosts) : [];
+};
+
 document.getElementById('load-btn').addEventListener('click', async () => {
     // Fetch posts from the API
     const fetchedPosts = await fetchPosts();
@@ -29,8 +35,11 @@ document.getElementById('load-btn').addEventListener('click', async () => {
     //allPosts = [...fetchedPosts, ...allPosts]; // Prepend existing posts with newly fetched posts
 
     // Update allPosts to include newly fetched posts followed by existing posts
+    allPosts = loadPostsFromLocalStorage();
     allPosts = [...allPosts, ...fetchedPosts.filter(post => !allPosts.find(p => p.id === post.id))];
 
+    // Save combined posts to local storage
+    savePostsToLocalStorage(allPosts);
 
     displayPosts(allPosts); // Display the posts
 });
@@ -50,6 +59,17 @@ const displayPosts = (posts) => {
     });
 };
 
+//save posts to local storage
+const savePostsToLocalStorage = (posts) => {
+    localStorage.setItem('posts', JSON.stringify(posts));
+};
+
+// Load initial posts from local storage
+allPosts = loadPostsFromLocalStorage();
+
+// Display posts from local storage on initial load
+displayPosts(allPosts);
+
 //event listener to add a new post
 document.getElementById('add-btn').addEventListener('click', async () => {
     const title = document.getElementById('title').value;
@@ -60,6 +80,7 @@ document.getElementById('add-btn').addEventListener('click', async () => {
         console.log(newPost);
         if (newPost) {
             allPosts.unshift(newPost);
+            savePostsToLocalStorage(allPosts);
             displayPosts(allPosts); // refresh the post list
             document.getElementById('title').value = ''; // Clear input
             document.getElementById('body').value = ''; // clear textarea
