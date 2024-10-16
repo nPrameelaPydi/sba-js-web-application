@@ -1,4 +1,4 @@
-import { fetchPosts, createPost, updatePost, deletePost } from './api.js';
+import { fetchPosts, updatePostOnServer, deletePostOnServer } from './api.js';
 import { loadPostsFromLocalStorage, savePostsToLocalStorage } from './storage.js';
 
 let allPosts = [];
@@ -15,53 +15,72 @@ const displayPosts = (posts) => {
             <h3>${post.title}</h3>
             <p>${post.body}</p>
             <button class="edit-btn" data-id="${post.id}">Edit</button>
-            <button class="delete-btn" data-id="${post.id}">Delete</button>`;
+            <button class="delete-btn" data-id="${post.id}">Delete</button>
+            ${post.isLocal ? '<span class="local-indicator"></span>' : ''}`;
         postsContainer.appendChild(postElement);
     });
 
-    //add event listeners to edit buttons
+    // Add event listeners to edit buttons
     const editButtons = document.querySelectorAll('.edit-btn');
     editButtons.forEach(button => {
         button.addEventListener('click', () => {
-            const postId = button.getAttribute('data-id');
-            const postToEdit = allPosts.find(p => p.id === parseInt(postId));
+            const postId = parseInt(button.getAttribute('data-id'));
+            const postToEdit = allPosts.find(p => p.id === postId);
+
             if (postToEdit) {
                 document.getElementById('title').value = postToEdit.title;
                 document.getElementById('body').value = postToEdit.body;
                 const addButton = document.getElementById('addOrUpdate-btn');
                 addButton.textContent = 'Update Post';
                 addButton.setAttribute('data-id', postId);
+                //after setting the values of the input fields, focus on the title input field
+                document.getElementById('title').focus();
+            } else {
+                alert('Error updating post. Please try again.');
             }
         });
     });
 
-
-    //add event listeners to delete buttons
+    // Add event listeners to delete buttons
     const deleteButtons = document.querySelectorAll('.delete-btn');
     deleteButtons.forEach(button => {
-        button.addEventListener('click', async () => {
-            const postId = button.getAttribute('data-id');
-            const deletedId = await deletePost(postId);
-            if (deletedId) {
-                allPosts = allPosts.filter(post => post.id !== parseInt(deletedId));
+        button.addEventListener('click', () => {
+            const postId = parseInt(button.getAttribute('data-id'));
+            const postToDelete = allPosts.find(post => post.id === postId);
+
+            if (postToDelete.isLocal) {
+                // Delete local post
+                allPosts = allPosts.filter(post => post.id !== postId);
                 savePostsToLocalStorage(allPosts);
                 displayPosts(allPosts);
             } else {
-                alert('Error deleting post. Please try again');
+                // For server posts, we'll keep them locally but mark as deleted
+                allPosts = allPosts.map(post =>
+                    post.id === postId ? { ...post, isDeletedLocally: true } : post
+                );
+                savePostsToLocalStorage(allPosts);
+                displayPosts(allPosts.filter(post => !post.isDeletedLocally));
             }
+
+            //after deleting or marking a post as deleted, clear input fields and focus on the title input
+            resetForm();
+            document.getElementById('title').focus();
         });
     });
 };
 
 // Load initial posts from local storage
 allPosts = loadPostsFromLocalStorage();
-displayPosts(allPosts);
+displayPosts(allPosts.filter(post => !post.isDeletedLocally));
 
 document.getElementById('load-btn').addEventListener('click', async () => {
     const fetchedPosts = await fetchPosts();
-    allPosts = [...fetchedPosts, ...allPosts.filter(post => !fetchedPosts.find(p => p.id === post.id))];
+    allPosts = [
+        ...fetchedPosts.map(post => ({ ...post, isLocal: false })),
+        ...allPosts.filter(post => post.isLocal)
+    ];
     savePostsToLocalStorage(allPosts);
-    displayPosts(allPosts);
+    displayPosts(allPosts.filter(post => !post.isDeletedLocally));
 });
 
 // Event listener for adding/updating posts
@@ -73,25 +92,29 @@ document.getElementById('addOrUpdate-btn').addEventListener('click', async () =>
 
     if (title && body) {
         if (postId) {
-            // Update post
-            const updatedPost = await updatePost(postId, title, body);
-            if (updatedPost) {
-                allPosts = allPosts.map(post => (post.id === parseInt(postId) ? updatedPost : post));
-                savePostsToLocalStorage(allPosts);
-                displayPosts(allPosts);
-                resetForm();
+            const postToUpdate = allPosts.find(post => post.id === parseInt(postId));
+
+            if (postToUpdate.isLocal) {
+                // Update local post
+                allPosts = allPosts.map(post =>
+                    post.id === parseInt(postId) ? { ...post, title, body } : post
+                );
             } else {
-                alert('Error updating post. Please try again.');
+                // Update server post locally
+                allPosts = allPosts.map(post =>
+                    post.id === parseInt(postId) ? { ...post, title, body, isModifiedLocally: true } : post
+                );
             }
+            savePostsToLocalStorage(allPosts);
+            displayPosts(allPosts.filter(post => !post.isDeletedLocally));
+            resetForm();
         } else {
-            // Create new post
-            const newPost = await createPost(title, body);
-            if (newPost) {
-                allPosts.unshift(newPost);
-                savePostsToLocalStorage(allPosts);
-                displayPosts(allPosts);
-                resetForm();
-            }
+            // Create new local post
+            const newPost = { id: Date.now(), title, body, isLocal: true };
+            allPosts.unshift(newPost);
+            savePostsToLocalStorage(allPosts);
+            displayPosts(allPosts.filter(post => !post.isDeletedLocally));
+            resetForm();
         }
     } else {
         alert('Please fill in both fields');
@@ -111,7 +134,8 @@ const resetForm = () => {
 document.getElementById('search-btn').addEventListener('click', () => {
     const searchTerm = document.getElementById('search-input').value.toLowerCase();
     const filteredPosts = allPosts.filter(post =>
-        post.title.toLowerCase().includes(searchTerm) || post.body.toLowerCase().includes(searchTerm)
+        !post.isDeletedLocally &&
+        (post.title.toLowerCase().includes(searchTerm) || post.body.toLowerCase().includes(searchTerm))
     );
     displayPosts(filteredPosts);
 });

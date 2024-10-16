@@ -34,7 +34,7 @@ export const createPost = async (title, body) => {
 };
 
 // Update post
-export const updatePost = async (id, title, body) => {
+export const updatePostOnServer = async (id, title, body) => {
     try {
         const response = await fetch(`${BASE_URL}/posts/${id}`, {
             method: 'PUT',
@@ -56,7 +56,7 @@ export const updatePost = async (id, title, body) => {
 };
 
 //Delete Post
-export const deletePost = async (id) => {
+export const deletePostOnServer = async (id) => {
     try {
         const response = await fetch(`${BASE_URL}/posts/${id}`, {
             method: 'DELETE',
@@ -65,6 +65,7 @@ export const deletePost = async (id) => {
         return id;//return id of the deleted post
     } catch (error) {
         console.error('Error deleting post: ', error);
+        return null;
     }
 }
 
