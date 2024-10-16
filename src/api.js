@@ -42,3 +42,29 @@ export const createPost = async (title, body) => {
 };
 
 
+//update endpoint: URL: PUT /posts/{id}
+//{
+//    "title": "Updated Title",
+//    "body": "Updated Body"
+//}
+
+//Update post
+export const updatePost = (id, title, body) => {
+    return fetch(`${BASE_URL}/posts/${id}`, {
+        method: `PUT`,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title, body }),
+    })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .catch(error => {
+            console.error('Error updating post:', error);
+            return null;
+        });
+}
+
+

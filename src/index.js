@@ -17,7 +17,7 @@
 
 // src/index.js
 
-import { fetchPosts, createPost } from './api.js';
+import { fetchPosts, createPost, updatePost } from './api.js';
 import { loadPostsFromLocalStorage, savePostsToLocalStorage } from './storage.js';
 
 let allPosts = [];
@@ -27,6 +27,10 @@ let allPosts = [];
 //    const storedPosts = localStorage.getItem('posts');
 //    return storedPosts ? JSON.parse(storedPosts) : [];
 //};
+
+// Load initial posts from local storage
+allPosts = loadPostsFromLocalStorage();
+displayPosts(allPosts);
 
 document.getElementById('load-btn').addEventListener('click', async () => {
     // Fetch posts from the API
@@ -55,10 +59,31 @@ const displayPosts = (posts) => {
     posts.forEach(post => {
         const postElement = document.createElement('div');
         postElement.className = 'post';
-        postElement.innerHTML = `<h3>${post.title}</h3><p>${post.body}</p>`;
+        postElement.innerHTML = `
+        <h3>${post.title}</h3>
+        <p>${post.body}</p>
+        <button class="edit-btn" data-id="${post.id}">Edit</button>`;
         postsContainer.appendChild(postElement);
     });
+
+    // Add event listeners to edit buttons
+    const editButtons = document.querySelectorAll('.edit-btn');
+    editButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const postId = button.getAttribute('data-id');
+            const postToEdit = allPosts.find(p => p.id === parseInt(postId));
+            document.getElementById('title').value = postToEdit.title;
+            document.getElementById('body').value = postToEdit.body;
+
+            // Update the add button to update post
+            const addButton = document.getElementById('addOrUpdate');
+            addButton.textContent = 'Update Post';
+            addButton.setAttribute('data-id', postId);
+        });
+    });
 };
+
+
 
 ////save posts to local storage
 //const savePostsToLocalStorage = (posts) => {
@@ -71,25 +96,49 @@ allPosts = loadPostsFromLocalStorage();
 // Display posts from local storage on initial load
 displayPosts(allPosts);
 
-//event listener to add a new post
-document.getElementById('add-btn').addEventListener('click', async () => {
+
+
+// Event listener to add/update a post
+document.getElementById('addOrUpdate').addEventListener('click', async () => {
     const title = document.getElementById('title').value;
     const body = document.getElementById('body').value;
+    const addButton = document.getElementById('addOrUpdate');
 
     if (title && body) {
-        const newPost = await createPost(title, body);
-        console.log(newPost);
-        if (newPost) {
-            allPosts.unshift(newPost);
-            savePostsToLocalStorage(allPosts);
-            displayPosts(allPosts); // refresh the post list
-            document.getElementById('title').value = ''; // Clear input
-            document.getElementById('body').value = ''; // clear textarea
+        if (addButton.getAttribute('data-id')) {
+            // Update post
+            const postId = addButton.getAttribute('data-id');
+            const updatedPost = await updatePost(postId, title, body);
+            if (updatedPost) {
+                allPosts = allPosts.map(post => (post.id === parseInt(postId) ? updatedPost : post));
+                savePostsToLocalStorage(allPosts);
+                displayPosts(allPosts);
+                resetForm();
+            }
+        } else {
+            // Create new post
+            const newPost = await createPost(title, body);
+            if (newPost) {
+                allPosts.unshift(newPost);
+                savePostsToLocalStorage(allPosts);
+                displayPosts(allPosts);
+                resetForm();
+            }
         }
     } else {
         alert('Please fill in both fields');
     }
 });
+
+// Reset form function
+const resetForm = () => {
+    document.getElementById('title').value = '';
+    document.getElementById('body').value = '';
+    const addButton = document.getElementById('addOrUpdate');
+    addButton.textContent = 'Add Post';
+    addButton.removeAttribute('data-id');
+};
+
 
 //event listener for searching posts basing on title
 document.getElementById('search-btn').addEventListener('click', () => {
@@ -97,8 +146,10 @@ document.getElementById('search-btn').addEventListener('click', () => {
     const filteredPosts = allPosts.filter(post =>
         post.title.toLowerCase().includes(searchTerm) || post.body.toLowerCase().includes(searchTerm)
     );
-    displayPosts(filteredPosts); // Display filtered posts
+    displayPosts(filteredPosts); //display filtered posts
 });
+
+
 
 
 
