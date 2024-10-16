@@ -1,5 +1,3 @@
-# sba-js-web-application
-
 # Explorer's Log Web Application
 
 ## Description
@@ -25,7 +23,6 @@ Clone the repository:
 ```bash
 git clone https://github.com/nPrameelaPydi/sba-js-web-application.git
 ```
-
 ## Usage
 - Adding a Post: Fill in the title and body fields at the top of the page and click "Add Post".
 - Editing a Post: Click the "Edit" button on a post, make your changes in the form fields, then click "Update Post".
@@ -40,7 +37,12 @@ The application is designed to work with a RESTful API. Ensure that your API end
 - PUT /posts/:id: Update an existing post
 - DELETE /posts/:id: Delete a post
 
-## Base URL, fake API:
-- DUMMYJSON's website 'https://dummyjson.com';
-- This project was created as a demonstration of client-side storage and server synchronization techniques.
+## Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+None, not applicable.
+
+## Acknowledgments
+This project was created as a demonstration of client-side storage and server synchronization techniques.
 Thanks to DummyJSON for providing a fake API for testing purposes.
