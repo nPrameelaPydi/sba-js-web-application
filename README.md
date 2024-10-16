@@ -23,7 +23,7 @@ Explorer's Log is a simple, client-side web application for managing posts. It a
 ## Setup and Installation
 Clone the repository:
 ```bash
-git clone https://github.com/your-username/dummy-planner.git 
+git clone https://github.com/nPrameelaPydi/sba-js-web-application.git
 ```
 
 ## Usage
@@ -33,11 +33,6 @@ git clone https://github.com/your-username/dummy-planner.git
 - Searching Posts: Enter a search term in the search field and click "Search" to filter posts.
 - Loading Server Posts: Click the "Load Posts" button to fetch posts from the server and merge them with local posts.
 
-## Setup and Installation
-Clone the repository:
-```bash
-git clone https://github.com/your-username/dummy-planner.git
-```
 ## API Integration
 The application is designed to work with a RESTful API. Ensure that your API endpoints match the following structure:
 - GET /posts: Fetch all posts
@@ -47,5 +42,5 @@ The application is designed to work with a RESTful API. Ensure that your API end
 
 ## Base URL, fake API:
 - DUMMYJSON's website 'https://dummyjson.com';
-This project was created as a demonstration of client-side storage and server synchronization techniques.
+- This project was created as a demonstration of client-side storage and server synchronization techniques.
 Thanks to DummyJSON for providing a fake API for testing purposes.
