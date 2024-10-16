@@ -12,9 +12,7 @@ Explorer's Log is a simple, client-side web application for managing posts. It a
 - Offline functionality with local storage & sync's with server when online
 
 ## Technologies Used
-- HTML5
-- CSS3
-- JavaScript (ES6+)
+- HTML5, CSS, JavaScript
 - Local Storage API
 - Fetch API for server communication
 
@@ -45,4 +43,4 @@ None, not applicable.
 
 ## Acknowledgments
 This project was created as a demonstration of client-side storage and server synchronization techniques.
-Thanks to DummyJSON for providing a fake API for testing purposes.
+Thanks to DummyJSON 'https://dummyjson.com' for providing a fake API for testing purposes.
