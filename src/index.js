@@ -54,7 +54,7 @@ const displayPosts = (posts) => {
                 savePostsToLocalStorage(allPosts);
                 displayPosts(allPosts);
             } else {
-                // For server posts, we'll keep them locally but mark as deleted
+                // Instead of immediately removing the post from the allPosts array, it marks the post as "deleted locally" by adding an isDeletedLocally: true flag to the post object.
                 allPosts = allPosts.map(post =>
                     post.id === postId ? { ...post, isDeletedLocally: true } : post
                 );
@@ -99,14 +99,32 @@ document.getElementById('addOrUpdate-btn').addEventListener('click', async () =>
                 allPosts = allPosts.map(post =>
                     post.id === parseInt(postId) ? { ...post, title, body } : post
                 );
+                savePostsToLocalStorage(allPosts);
+                displayPosts(allPosts.filter(post => !post.isDeletedLocally));
             } else {
-                // Update server post locally
-                allPosts = allPosts.map(post =>
-                    post.id === parseInt(postId) ? { ...post, title, body, isModifiedLocally: true } : post
-                );
+                // Update server post
+                try {
+                    const updatedPost = await updatePostOnServer(postId, title, body);
+                    if (updatedPost) {
+                        allPosts = allPosts.map(post =>
+                            post.id === parseInt(postId) ? { ...updatedPost, isLocal: false } : post
+                        );
+                        savePostsToLocalStorage(allPosts);
+                        displayPosts(allPosts.filter(post => !post.isDeletedLocally));
+                    } else {
+                        throw new Error('Failed to update post on server');
+                    }
+                } catch (error) {
+                    console.error('Error updating post on server:', error);
+                    // Fallback to local update if server update fails
+                    allPosts = allPosts.map(post =>
+                        post.id === parseInt(postId) ? { ...post, title, body, isModifiedLocally: true } : post
+                    );
+                    savePostsToLocalStorage(allPosts);
+                    displayPosts(allPosts.filter(post => !post.isDeletedLocally));
+                    alert('Failed to update post on server. Changes saved locally.');
+                }
             }
-            savePostsToLocalStorage(allPosts);
-            displayPosts(allPosts.filter(post => !post.isDeletedLocally));
             resetForm();
         } else {
             // Create new local post
