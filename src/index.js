@@ -14,7 +14,8 @@ const displayPosts = (posts) => {
         postElement.innerHTML = `
             <h3>${post.title}</h3>
             <p>${post.body}</p>
-            <button class="edit-btn" data-id="${post.id}">Edit</button>`;
+            <button class="edit-btn" data-id="${post.id}">Edit Post</button>`;
+
         postsContainer.appendChild(postElement);
     });
 

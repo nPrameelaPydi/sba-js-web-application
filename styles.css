@@ -43,7 +43,8 @@ textarea {
     justify-content: space-between;
 }
 
-button {
+button,
+#search-btn {
     padding: 10px 15px;
     background-color: #28a745;
     color: white;
@@ -51,6 +52,20 @@ button {
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+}
+
+.edit-btn {
+    padding: 8px 10px;
+    /* Adjust top/bottom padding and left/right padding */
+    margin-left: 0px;
+}
+
+#search-input {
+    width: 75%;
+}
+
+#search-btn {
+    width: 20%;
 }
 
 button:hover {
