@@ -1,57 +1,9 @@
-//fetch('https://dummyjson.com/posts')
-//    .then(response => response.json())
-//    .then(data => console.log(data))
-//    .catch(error => console.error('Error:', error));
-
-////to fetch posts from DummyJSON
-//const fetchPosts = async () => {
-//    const response = await fetch('https://dummyjson.com/posts');
-//    const data = await response.json();
-//    return data.posts; // Access the posts array
-//};
-
-//fetchPosts().then(posts => {
-//    console.log(posts); // Log the posts to see the output
-//});
-
-
-// src/index.js
-
 import { fetchPosts, createPost, updatePost } from './api.js';
 import { loadPostsFromLocalStorage, savePostsToLocalStorage } from './storage.js';
 
 let allPosts = [];
 
-////load posts from local storage
-//const loadPostsFromLocalStorage = () => {
-//    const storedPosts = localStorage.getItem('posts');
-//    return storedPosts ? JSON.parse(storedPosts) : [];
-//};
-
-// Load initial posts from local storage
-allPosts = loadPostsFromLocalStorage();
-displayPosts(allPosts);
-
-document.getElementById('load-btn').addEventListener('click', async () => {
-    // Fetch posts from the API
-    const fetchedPosts = await fetchPosts();
-
-    // Combine fetched posts with any new posts in allPosts
-    //allPosts = [...fetchedPosts, ...allPosts]; // Prepend existing posts with newly fetched posts
-
-    // Update allPosts to include newly fetched posts followed by existing posts
-    allPosts = loadPostsFromLocalStorage();
-    allPosts = [...allPosts, ...fetchedPosts.filter(post => !allPosts.find(p => p.id === post.id))];
-
-    // Save combined posts to local storage
-    savePostsToLocalStorage(allPosts);
-
-    displayPosts(allPosts); // Display the posts
-});
-
-
-
-//function to display posts in the UI or appView
+// Function to display posts
 const displayPosts = (posts) => {
     const postsContainer = document.getElementById('posts');
     postsContainer.innerHTML = ''; // Clear previous posts
@@ -60,9 +12,9 @@ const displayPosts = (posts) => {
         const postElement = document.createElement('div');
         postElement.className = 'post';
         postElement.innerHTML = `
-        <h3>${post.title}</h3>
-        <p>${post.body}</p>
-        <button class="edit-btn" data-id="${post.id}">Edit</button>`;
+            <h3>${post.title}</h3>
+            <p>${post.body}</p>
+            <button class="edit-btn" data-id="${post.id}">Edit</button>`;
         postsContainer.appendChild(postElement);
     });
 
@@ -72,48 +24,46 @@ const displayPosts = (posts) => {
         button.addEventListener('click', () => {
             const postId = button.getAttribute('data-id');
             const postToEdit = allPosts.find(p => p.id === parseInt(postId));
-            document.getElementById('title').value = postToEdit.title;
-            document.getElementById('body').value = postToEdit.body;
-
-            // Update the add button to update post
-            const addButton = document.getElementById('addOrUpdate');
-            addButton.textContent = 'Update Post';
-            addButton.setAttribute('data-id', postId);
+            if (postToEdit) {
+                document.getElementById('title').value = postToEdit.title;
+                document.getElementById('body').value = postToEdit.body;
+                const addButton = document.getElementById('addOrUpdate-btn');
+                addButton.textContent = 'Update Post';
+                addButton.setAttribute('data-id', postId);
+            }
         });
     });
 };
 
-
-
-////save posts to local storage
-//const savePostsToLocalStorage = (posts) => {
-//    localStorage.setItem('posts', JSON.stringify(posts));
-//};
-
 // Load initial posts from local storage
 allPosts = loadPostsFromLocalStorage();
-
-// Display posts from local storage on initial load
 displayPosts(allPosts);
 
+document.getElementById('load-btn').addEventListener('click', async () => {
+    const fetchedPosts = await fetchPosts();
+    allPosts = [...fetchedPosts, ...allPosts.filter(post => !fetchedPosts.find(p => p.id === post.id))];
+    savePostsToLocalStorage(allPosts);
+    displayPosts(allPosts);
+});
 
-
-// Event listener to add/update a post
-document.getElementById('addOrUpdate').addEventListener('click', async () => {
+// Event listener for adding/updating posts
+document.getElementById('addOrUpdate-btn').addEventListener('click', async () => {
     const title = document.getElementById('title').value;
     const body = document.getElementById('body').value;
-    const addButton = document.getElementById('addOrUpdate');
+    const addButton = document.getElementById('addOrUpdate-btn');
+    const postId = addButton.getAttribute('data-id');
 
     if (title && body) {
-        if (addButton.getAttribute('data-id')) {
+        if (postId) {
             // Update post
-            const postId = addButton.getAttribute('data-id');
             const updatedPost = await updatePost(postId, title, body);
             if (updatedPost) {
                 allPosts = allPosts.map(post => (post.id === parseInt(postId) ? updatedPost : post));
                 savePostsToLocalStorage(allPosts);
                 displayPosts(allPosts);
                 resetForm();
+            } else {
+                alert('Error updating post. Please try again.');
             }
         } else {
             // Create new post
@@ -134,24 +84,16 @@ document.getElementById('addOrUpdate').addEventListener('click', async () => {
 const resetForm = () => {
     document.getElementById('title').value = '';
     document.getElementById('body').value = '';
-    const addButton = document.getElementById('addOrUpdate');
+    const addButton = document.getElementById('addOrUpdate-btn');
     addButton.textContent = 'Add Post';
     addButton.removeAttribute('data-id');
 };
 
-
-//event listener for searching posts basing on title
+// Event listener for searching posts based on title
 document.getElementById('search-btn').addEventListener('click', () => {
     const searchTerm = document.getElementById('search-input').value.toLowerCase();
     const filteredPosts = allPosts.filter(post =>
         post.title.toLowerCase().includes(searchTerm) || post.body.toLowerCase().includes(searchTerm)
     );
-    displayPosts(filteredPosts); //display filtered posts
+    displayPosts(filteredPosts);
 });
-
-
-
-
-
-
-
