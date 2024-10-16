@@ -54,3 +54,17 @@ export const updatePost = async (id, title, body) => {
         return null;
     }
 };
+
+//Delete Post
+export const deletePost = async (id) => {
+    try {
+        const response = await fetch(`${BASE_URL}/posts/${id}`, {
+            method: 'DELETE',
+        });
+        if (!response.ok) throw new Error('Network response was not ok');
+        return id;//return id of the deleted post
+    } catch (error) {
+        console.error('Error deleting post: ', error);
+    }
+}
+

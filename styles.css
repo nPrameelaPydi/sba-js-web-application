@@ -52,7 +52,8 @@ button,
     transition: background-color 0.3s ease;
 }
 
-.edit-btn {
+.edit-btn,
+.delete-btn {
     padding: 8px 10px;
     /* Adjust top/bottom padding and left/right padding */
     margin-left: 0px;

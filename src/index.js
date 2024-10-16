@@ -1,4 +1,4 @@
-import { fetchPosts, createPost, updatePost } from './api.js';
+import { fetchPosts, createPost, updatePost, deletePost } from './api.js';
 import { loadPostsFromLocalStorage, savePostsToLocalStorage } from './storage.js';
 
 let allPosts = [];
@@ -14,12 +14,12 @@ const displayPosts = (posts) => {
         postElement.innerHTML = `
             <h3>${post.title}</h3>
             <p>${post.body}</p>
-            <button class="edit-btn" data-id="${post.id}">Edit Post</button>`;
-
+            <button class="edit-btn" data-id="${post.id}">Edit</button>
+            <button class="delete-btn" data-id="${post.id}">Delete</button>`;
         postsContainer.appendChild(postElement);
     });
 
-    // Add event listeners to edit buttons
+    //add event listeners to edit buttons
     const editButtons = document.querySelectorAll('.edit-btn');
     editButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -31,6 +31,23 @@ const displayPosts = (posts) => {
                 const addButton = document.getElementById('addOrUpdate-btn');
                 addButton.textContent = 'Update Post';
                 addButton.setAttribute('data-id', postId);
+            }
+        });
+    });
+
+
+    //add event listeners to delete buttons
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', async () => {
+            const postId = button.getAttribute('data-id');
+            const deletedId = await deletePost(postId);
+            if (deletedId) {
+                allPosts = allPosts.filter(post => post.id !== parseInt(deletedId));
+                savePostsToLocalStorage(allPosts);
+                displayPosts(allPosts);
+            } else {
+                alert('Error deleting post. Please try again');
             }
         });
     });
