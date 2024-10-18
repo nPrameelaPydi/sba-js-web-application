@@ -116,7 +116,7 @@ document.getElementById('addOrUpdate-btn').addEventListener('click', async () =>
                     }
                 } catch (error) {
                     console.error('Error updating post on server:', error);
-                    // Fallback to local update if server update fails
+                    //fallsback to local update if server update fails
                     allPosts = allPosts.map(post =>
                         post.id === parseInt(postId) ? { ...post, title, body, isModifiedLocally: true } : post
                     );
@@ -138,6 +138,33 @@ document.getElementById('addOrUpdate-btn').addEventListener('click', async () =>
         alert('Please fill in both fields');
     }
 });
+
+//// Create new post on the server
+//try {
+//    const newPost = await createPost(title, body);
+//    if (newPost) {
+//        allPosts.unshift({ ...newPost, isLocal: false });
+//        savePostsToLocalStorage(allPosts);
+//        displayPosts(allPosts.filter(post => !post.isDeletedLocally));
+//        resetForm();
+//    } else {
+//        throw new Error('Failed to create post on server');
+//    }
+//} catch (error) {
+//    console.error('Error creating post on server:', error);
+//    //fallback to local creation
+//    const localPost = { id: Date.now(), title, body, isLocal: true };
+//    allPosts.unshift(localPost);
+//    savePostsToLocalStorage(allPosts);
+//    displayPosts(allPosts.filter(post => !post.isDeletedLocally));
+//    resetForm();
+//    alert('Failed to create post on server. Post saved locally.');
+//}
+//}
+//} else {
+//alert('Please fill in both fields');
+//}
+//});
 
 // Reset form function
 const resetForm = () => {

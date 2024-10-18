@@ -4,12 +4,11 @@
 Explorer's Log is a simple, client-side web application for managing posts. It allows users to create, read, update, and delete posts, with the ability to work offline and sync with a server when online. This application demonstrates the use of local storage and server interactions in a web context.
 
 ## Features
-- Create new posts locally
+- Create new posts
 - View a list of all posts
-- Edit existing posts (both local and server-based)
-- Delete posts (marking server posts as deleted locally)
+- Edit existing posts
+- Delete posts 
 - Search posts by title or content
-- Offline functionality with local storage & sync's with server when online
 
 ## Technologies Used
 - HTML5, CSS, JavaScript
@@ -42,5 +41,5 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 None, not applicable.
 
 ## Acknowledgments
-This project was created as a demonstration of client-side storage and server synchronization techniques.
-Thanks to DummyJSON 'https://dummyjson.com' for providing a fake API for testing purposes.
+- This project was created as a demonstration of client-side storage and server synchronization techniques.
+- Thanks to DummyJSON 'https://dummyjson.com' for providing a fake API for testing purposes.
